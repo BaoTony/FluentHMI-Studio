@@ -201,6 +201,15 @@ set_target_properties(FluentHMIStudio PROPERTIES
 # The studio exports applications by copying the runtime, so build them together.
 add_dependencies(FluentHMIStudio FluentHMIRuntime)
 
+# Auto-deploy Qt runtime dependencies to the build directory after linking.
+if(WIN32)
+    get_filename_component(_qt_bin_dir "${Qt6_DIR}/../../../bin" ABSOLUTE)
+    add_custom_command(TARGET FluentHMIStudio POST_BUILD
+        COMMAND "${_qt_bin_dir}/windeployqt" "$<TARGET_FILE:FluentHMIStudio>"
+        COMMENT "Deploying Qt runtime dependencies..."
+    )
+endif()
+
 # Icons: an .icns in each macOS bundle, an icon plus version information in each .exe.
 foreach(target IN ITEMS FluentHMIStudio FluentHMIRuntime)
     if(APPLE)
